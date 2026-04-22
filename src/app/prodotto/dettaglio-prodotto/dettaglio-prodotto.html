@@ -1,0 +1,32 @@
+@if (prodotto()) {
+<div class="detail-container">
+  <div class="image-section">
+    <img [src]="prodotto()?.image" [alt]="prodotto()?.title">
+  </div>
+
+
+  <div class="info-section">
+    <p class="category">{{ prodotto()?.category }}</p>
+    <h1>{{ prodotto()?.title }}</h1>
+    <p class="price">{{ prodotto()?.price }} €</p>
+    <p class="description">{{ prodotto()?.description }}</p>
+    <div class="rating">
+      <span class="stars">rating: {{ prodotto()?.rating?.rate }}</span>
+
+    </div>
+
+    <a routerLink="/products" class="back-btn">
+      <span>←</span> Torna alla lista
+    </a>
+  </div>
+</div>
+} @else {
+<div class="loading-container">
+  @if (errore()) {
+  <p class="error">{{ errore() }}</p>
+  } @else {
+  <p>Caricamento prodotto...</p>
+  <div class="spinner"></div>
+  }
+</div>
+}

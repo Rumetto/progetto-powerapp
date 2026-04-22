@@ -1,0 +1,117 @@
+.page-wrapper {
+  width: 100%;
+}
+
+
+
+.form-container {
+  width: 100%;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+}
+
+label {
+  color: #FD5A02;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+input,
+textarea {
+  border: none;
+  border-bottom: 1px solid #777;
+  background: transparent;
+  resize: none;
+  width: 90%;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-bottom: 2px solid #FD5A02;
+}
+
+input:disabled,
+textarea:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+button {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  padding: 12px 24px;
+  background: #FD5A02;
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background: #e85a00;
+}
+
+button:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.page-header {
+  border-bottom: 1px solid black;
+  padding-bottom:30px;
+  text-align:center;
+  margin-bottom:50px;
+}
+.success-screen {
+  min-height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.success-box {
+  background: white;
+  border: 1px solid #e5e5e5;
+  padding: 2.5rem 3rem;
+  text-align: center;
+}
+
+.success-box h2 {
+  color: #FD5A02;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.success-box p {
+  color: #444;
+  font-size: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #FD5A02;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,63 @@
+<div class="form-wrapper" *ngIf="!showSuccessScreen(); else successTpl">
+
+  <form [formGroup]="form" (ngSubmit)="invia()">
+
+    <div>
+      <label>Nome</label>
+      <input type="text" formControlName="nome" />
+
+      <small *ngIf="form.get('nome')?.touched && form.get('nome')?.invalid">
+        Il nome è obbligatorio
+      </small>
+    </div>
+
+
+    <div>
+      <label>Cognome</label>
+      <input type="text" formControlName="cognome" />
+
+      <small *ngIf="form.get('cognome')?.touched && form.get('cognome')?.invalid">
+        Il cognome è obbligatorio
+      </small>
+    </div>
+
+
+    <div>
+      <label>Email</label>
+      <input type="email" formControlName="email" />
+
+      <small *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['required']">
+        L'email è obbligatoria
+      </small>
+
+      <small *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['email']">
+        Inserisci un'email valida
+      </small>
+    </div>
+
+   
+    <div>
+      <label>Messaggio</label>
+      <textarea rows="5" formControlName="messaggio"></textarea>
+
+      <small *ngIf="form.get('messaggio')?.touched && form.get('messaggio')?.invalid">
+        Il messaggio è obbligatorio
+      </small>
+    </div>
+
+
+    <button type="submit" [disabled]="isLoading()">
+      {{ isLoading() ? 'Invio in corso...' : 'Invia' }}
+    </button>
+
+  </form>
+
+</div>
+
+
+<ng-template #successTpl>
+  <div class="success-message">
+    <h2>Messaggio inviato con successo</h2>
+    <p>Ti risponderemo il prima possibile.</p>
+  </div>
+</ng-template>

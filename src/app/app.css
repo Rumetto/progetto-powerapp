@@ -1,0 +1,142 @@
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+
+.sidebar {
+  width: var(--sidebar-width);
+  background: rgb(255, 255, 255);
+  border-right:1px solid black !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-right: 1px solid rgba(255, 254, 254, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  height: 100vh;
+  z-index: 100;
+  width:10%;
+}
+
+.sidebar-header {
+  padding: 2rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.logo img {
+  max-width: 100%;
+  height: auto;
+  max-height: 50px;
+  object-fit: contain;
+}
+
+.logo-icon {
+  font-size: 1.8rem;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0 1rem;
+}
+
+.sidebar-nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 1rem;
+  background: white;
+  color: #475569;
+  border: 1px solid #475569;
+  font-weight: 500;
+  transition: var(--transition);
+  width:100px;
+  justify-content:center;
+}
+
+
+.sidebar-nav a:hover {
+  background: rgba(253, 90, 2, 0.1);
+  color: #FD5A02;
+  border-color: #FD5A02;
+}
+
+
+.sidebar-nav a.active {
+  background: #FD5A02;
+  color: white;
+  border-color: #FD5A02;
+
+}
+
+.icon {
+  font-size: 1.2rem;
+}
+
+
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 80px;
+  }
+
+  .logo-text, 
+  .user-info, 
+  .sidebar-nav a span:not(.icon) {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: 80px;
+  }
+
+  .sidebar-header, 
+  .sidebar-footer {
+    padding: 1rem;
+    justify-content: center;
+  }
+
+  .sidebar-nav a {
+    justify-content: center;
+    padding: 12px;
+  }
+}
+
+.page-header {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid black;
+  margin-top: 11px;
+  margin-bottom: 50px;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 500;
+  color: #14213d;
+  margin: 0;
+}

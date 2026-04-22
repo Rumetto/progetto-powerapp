@@ -1,0 +1,27 @@
+<div class="container">
+    <div class="page-header">
+      <h1>Lista prodotti</h1>
+    </div>
+    
+  @for (p of prodotti(); track p.id) {
+    <div class="card" [routerLink]="['/products', p.id]">
+      <div>
+         <img [src]="p.image" alt="prodotto">
+      </div>
+     
+      
+      <div class="nome-e-categoria">
+        <h2>{{ p.title }}</h2>
+        <p class="category">{{ p.category }}</p>
+      </div>
+
+      <div class="price">
+        <p>{{ p.price }} €</p>
+      </div>
+        
+    </div>
+   
+  }
+
+
+
