@@ -1,26 +1,30 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ProductService } from '../prodotto/product.service';
 
 @Component({
   selector: 'app-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './form.html',
-  styleUrl: './form.css',
+  styleUrl: './form.css'
 })
 export class Form {
   isLoading = signal(false);
-  showSuccessScreen = signal(false);
+  showSuccess = signal(false);
 
   form = new FormGroup({
-    nome: new FormControl('', Validators.required),
-    cognome: new FormControl('', Validators.required),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    messaggio: new FormControl('', Validators.required),
+    title: new FormControl('', Validators.required),
+    price: new FormControl('', Validators.required),
+    description: new FormControl('', Validators.required),
+    category: new FormControl('', Validators.required),
+    image: new FormControl('', Validators.required)
   });
 
-  invia() {
+  constructor(private productService: ProductService) {}
+
+  async invia() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -28,22 +32,30 @@ export class Form {
 
     this.isLoading.set(true);
 
-    setTimeout(() => {
-      this.isLoading.set(false);
-      this.showSuccessScreen.set(true);
-
-      console.log(this.form.value);
-
-      this.form.reset({
-        nome: '',
-        cognome: '',
-        email: '',
-        messaggio: '',
+    try {
+      await this.productService.addProduct({
+        title: this.form.value.title ?? '',
+        price: Number(this.form.value.price ?? 0),
+        description: this.form.value.description ?? '',
+        category: this.form.value.category ?? '',
+        image: this.form.value.image ?? '',
+        rating: {
+          rate: 0,
+          count: 0
+        }
       });
 
+      this.form.reset();
+      this.showSuccess.set(true);
+
       setTimeout(() => {
-        this.showSuccessScreen.set(false);
-      }, 3000);
-    }, 2000);
+        this.showSuccess.set(false);
+      }, 2000);
+
+    } catch (error) {
+      console.error('Errore salvataggio prodotto:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 }

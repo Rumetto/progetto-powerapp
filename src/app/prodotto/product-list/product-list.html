@@ -1,27 +1,33 @@
-<div class="container">
-    <div class="page-header">
-      <h1>Lista prodotti</h1>
+<div class="page-header">
+  <h1>Lista prodotti</h1>
+</div>
+
+<div *ngIf="isLoading" class="loader-container">
+  <div class="loader"></div>
+  <p>Caricamento prodotti in corso...</p>
+</div>
+
+<div *ngIf="!isLoading && errorMessage" class="error-container">
+  <p>{{ errorMessage }}</p>
+</div>
+
+<div *ngIf="!isLoading && !errorMessage && products.length === 0" class="empty-container">
+  <p>Nessun prodotto presente.</p>
+</div>
+
+<div *ngIf="!isLoading && !errorMessage && products.length > 0" class="products-grid">
+  <div class="product-card" *ngFor="let product of products" [routerLink]="['/products', product.id]">
+    <div class="product-image-wrapper">
+      <img [src]="product.image" [alt]="product.title" loading="lazy" />
+      <div class="product-category-badge">{{ product.category }}</div>
     </div>
-    
-  @for (p of prodotti(); track p.id) {
-    <div class="card" [routerLink]="['/products', p.id]">
-      <div>
-         <img [src]="p.image" alt="prodotto">
-      </div>
-     
-      
-      <div class="nome-e-categoria">
-        <h2>{{ p.title }}</h2>
-        <p class="category">{{ p.category }}</p>
-      </div>
 
-      <div class="price">
-        <p>{{ p.price }} €</p>
+    <div class="product-info">
+      <h3 class="product-title">{{ product.title }}</h3>
+      <div class="product-footer">
+        <p class="product-price">{{ product.price | number:'1.2-2' }} €</p>
+        <span class="view-detail-btn">Dettagli →</span>
       </div>
-        
     </div>
-   
-  }
-
-
-
+  </div>
+</div>

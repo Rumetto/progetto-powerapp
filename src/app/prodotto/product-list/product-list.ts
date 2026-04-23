@@ -1,8 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ProductService } from '../product.service';
-import { Prodotto } from '../prodotto';
+import { Product, ProductService } from '../product.service';
 
 @Component({
   selector: 'app-product-list',
@@ -12,21 +11,28 @@ import { Prodotto } from '../prodotto';
   styleUrl: './product-list.css'
 })
 export class ProductList implements OnInit {
+  products: Product[] = [];
+  isLoading = true;
+  errorMessage = '';
 
-  prodotti = signal<Prodotto[]>([]);
-
-  constructor(private productService: ProductService) { }
+  constructor(
+    private productService: ProductService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   async ngOnInit(): Promise<void> {
-    var data = await this.productService.getProdotti();
-    this.prodotti.set(data);
-    console.log("prodotti", this.prodotti());
+    console.log('PRODUCT LIST INIT');
 
-    // this.productService.getProdotti().then((data: any[]) => {
-    //   this.prodotti.set(data);
-    // }).catch((err: any) => {
-    //   console.error('ERRORE API DETTAGLIO:', err);
-    //  // this.errore.set('Errore nel caricamento del prodotto');
-    // });
+    try {
+      this.products = await this.productService.getProducts();
+      console.log('PRODUCTS CARICATI:', this.products);
+    } catch (error) {
+      console.error('Errore durante il caricamento dei prodotti:', error);
+      this.errorMessage = 'Errore durante il caricamento dei prodotti.';
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+      console.log('LOADING FINITO');
+    }
   }
 }

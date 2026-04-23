@@ -1,32 +1,61 @@
-@if (prodotto()) {
 <div class="detail-container">
-  <div class="image-section">
-    <img [src]="prodotto()?.image" [alt]="prodotto()?.title">
+
+  <div *ngIf="isLoading" class="loader-wrapper">
+    <div class="loader"></div>
+    <p>Caricamento dettagli prodotto...</p>
   </div>
 
+  <div *ngIf="!isLoading && errorMessage" class="error-wrapper">
+    <div class="error-icon">⚠️</div>
+    <h2>Oops!</h2>
+    <p>{{ errorMessage }}</p>
+    <button class="btn btn-primary" (click)="tornaIndietro()">Torna alla lista</button>
+  </div>
 
-  <div class="info-section">
-    <p class="category">{{ prodotto()?.category }}</p>
-    <h1>{{ prodotto()?.title }}</h1>
-    <p class="price">{{ prodotto()?.price }} €</p>
-    <p class="description">{{ prodotto()?.description }}</p>
-    <div class="rating">
-      <span class="stars">rating: {{ prodotto()?.rating?.rate }}</span>
-
+  <div *ngIf="!isLoading && prodotto" class="product-detail-card">
+    <div class="detail-navigation">
+      <button class="back-link" (click)="tornaIndietro()">
+        <span class="icon">←</span> Torna ai prodotti
+      </button>
     </div>
 
-    <a routerLink="/products" class="back-btn">
-      <span>←</span> Torna alla lista
-    </a>
+    <div class="product-hero">
+      <div class="image-section">
+        <div class="image-container">
+          <img [src]="prodotto.image" [alt]="prodotto.title" />
+        </div>
+      </div>
+
+      <div class="content-section">
+        <div class="badge-row">
+          <span class="category-badge">{{ prodotto.category }}</span>
+          <div class="rating-badge" *ngIf="prodotto.rating">
+            <span class="star">★</span>
+            <span class="rate">{{ prodotto.rating.rate }}</span>
+            <span class="count">({{ prodotto.rating.count }})</span>
+          </div>
+        </div>
+
+        <h1 class="title">{{ prodotto.title }}</h1>
+        
+        <div class="price-container">
+          <span class="price">{{ prodotto.price | number:'1.2-2' }} €</span>
+          <span class="tax-info">IVA inclusa</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="description-section">
+          <h3>Descrizione</h3>
+          <p>{{ prodotto.description }}</p>
+        </div>
+
+        <div class="action-section">
+          <button class="btn btn-accent">Aggiungi al carrello</button>
+          <div class="product-id">Codice prodotto: #{{ prodotto.id }}</div>
+        </div>
+      </div>
+    </div>
   </div>
+
 </div>
-} @else {
-<div class="loading-container">
-  @if (errore()) {
-  <p class="error">{{ errore() }}</p>
-  } @else {
-  <p>Caricamento prodotto...</p>
-  <div class="spinner"></div>
-  }
-</div>
-}
