@@ -4,7 +4,10 @@ import {
   addDoc,
   getDocs,
   doc,
-  getDoc
+  getDoc,
+  query,
+  orderBy,
+  serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -15,10 +18,7 @@ export interface Product {
   description: string;
   category: string;
   image: string;
-  rating: {
-    rate: number;
-    count: number;
-  };
+  createdAt?: any;
 }
 
 @Injectable({
@@ -30,6 +30,8 @@ export class ProductService {
   async getProducts(): Promise<Product[]> {
     console.log('ENTRO IN getProducts');
 
+    // Recuperiamo tutti i documenti senza filtri/ordinamenti Firestore
+    // così non escludiamo quelli vecchi senza il campo createdAt
     const snapshot = await getDocs(this.productsCollection);
 
     console.log('SNAPSHOT ARRIVATO');
@@ -38,16 +40,30 @@ export class ProductService {
     const prodotti = snapshot.docs.map((docItem) => ({
       id: docItem.id,
       ...(docItem.data() as Omit<Product, 'id'>)
-    }));
+    })) as Product[];
 
-    console.log('PRODOTTI LETTI:', prodotti);
+    // Ordiniamo in memoria: chi non ha data finisce all'inizio (vecchi)
+    // chi ha la data viene ordinato dal più vecchio al più nuovo (fondo lista)
+    prodotti.sort((a, b) => {
+      const timeA = a.createdAt?.seconds || 0;
+      const timeB = b.createdAt?.seconds || 0;
+      return timeA - timeB;
+    });
+
+    console.log('PRODOTTI LETTI E ORDINATI:', prodotti);
 
     return prodotti;
   }
 
   async addProduct(product: Omit<Product, 'id'>): Promise<void> {
     console.log('ADD PRODUCT CHIAMATO CON:', product);
-    await addDoc(this.productsCollection, product);
+    
+    const productWithTimestamp = {
+      ...product,
+      createdAt: serverTimestamp()
+    };
+
+    await addDoc(this.productsCollection, productWithTimestamp);
     console.log('PRODOTTO AGGIUNTO SU FIRESTORE');
   }
 

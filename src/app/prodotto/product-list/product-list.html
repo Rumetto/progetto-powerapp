@@ -15,19 +15,19 @@
   <p>Nessun prodotto presente.</p>
 </div>
 
-<div *ngIf="!isLoading && !errorMessage && products.length > 0" class="products-grid">
-  <div class="product-card" *ngFor="let product of products" [routerLink]="['/products', product.id]">
-    <div class="product-image-wrapper">
+<div *ngIf="!isLoading && !errorMessage && products.length > 0" class="products-list">
+  <div class="product-item" *ngFor="let product of products" [routerLink]="['/products', product.id]">
+    <div class="product-image-container">
       <img [src]="product.image" [alt]="product.title" loading="lazy" />
-      <div class="product-category-badge">{{ product.category }}</div>
     </div>
 
-    <div class="product-info">
+    <div class="product-main-info">
       <h3 class="product-title">{{ product.title }}</h3>
-      <div class="product-footer">
-        <p class="product-price">{{ product.price | number:'1.2-2' }} €</p>
-        <span class="view-detail-btn">Dettagli →</span>
-      </div>
+      <p class="product-category">{{ product.category }}</p>
+    </div>
+
+    <div class="product-price-container">
+      <p class="product-price">{{ product.price | number:'1.2-2' }} €</p>
     </div>
   </div>
 </div>

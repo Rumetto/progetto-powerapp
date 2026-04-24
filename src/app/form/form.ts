@@ -39,10 +39,7 @@ export class Form {
         description: this.form.value.description ?? '',
         category: this.form.value.category ?? '',
         image: this.form.value.image ?? '',
-        rating: {
-          rate: 0,
-          count: 0
-        }
+
       });
 
       this.form.reset();
