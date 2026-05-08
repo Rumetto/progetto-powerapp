@@ -1,0 +1,174 @@
+.edit-page {
+  min-height: 100vh;
+  padding: 40px 5%;
+  background: #ffffff;
+  color: #0f1f3d;
+}
+
+/* HEADER */
+.edit-header {
+  max-width: 1100px;
+  margin: 0 auto 40px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 20px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 25px;
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.back-link:hover {
+  color: #FD5A02;
+}
+
+.edit-header h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* FORM */
+.edit-card {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 26px 30px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field.full {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* INPUT STYLE (super clean) */
+input,
+textarea,
+select {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #d1d5db;
+  background: transparent;
+  padding: 10px 4px;
+  font-size: 1rem;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-bottom: 2px solid #FD5A02;
+}
+
+/* ERROR TEXT */
+small {
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* BUTTON */
+button[type="submit"] {
+  margin-top: 30px;
+  width: 100%;
+  border: none;
+  background: #FD5A02;
+  color: #ffffff;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.2s ease;
+}
+
+button[type="submit"]:hover:not(:disabled) {
+  background: #e65300;
+}
+
+button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* MESSAGES */
+.message {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  font-weight: 700;
+}
+
+.message.error {
+  color: #dc2626;
+}
+
+.message.success {
+  color: #16a34a;
+}
+
+/* LOADER */
+.state-card {
+  text-align: center;
+  color: #6b7280;
+}
+
+.loader {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 12px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #FD5A02;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .edit-page {
+    padding: 30px 20px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-header h1 {
+    font-size: 1.5rem;
+  }
+}

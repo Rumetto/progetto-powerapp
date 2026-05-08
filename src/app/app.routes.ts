@@ -1,11 +1,38 @@
 import { Routes } from '@angular/router';
-import { ProductList } from './prodotto/product-list/product-list';
-import { DettaglioProdotto } from './prodotto/dettaglio-prodotto/dettaglio-prodotto';
-import { Form} from './form/form';
+
+import { CategoryList } from './categorie/category-list/category-list';
+
+import { EditCategory } from './categorie/edit-category/edit-category';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'products', pathMatch: 'full' },
-  { path: 'products', component: ProductList },
-  { path: 'products/:id', component: DettaglioProdotto },
-  { path: 'form', component: Form }
+  {
+    path: '',
+    redirectTo: 'products',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'products',
+    loadChildren: () =>
+      import('./prodotto/product.routes').then(m => m.productRoutes)
+  },
+
+  {
+    path: 'categories',
+    children: [
+      {
+        path: '',
+        component: CategoryList
+      },
+      {
+        path: ':categoryId',
+        component: EditCategory
+      }
+    ]
+  },
+
+  {
+    path: '**',
+    redirectTo: 'products'
+  }
 ];

@@ -1,0 +1,116 @@
+<section class="edit-page">
+
+  <div class="edit-header">
+    <a routerLink="/products" class="back-link">
+      ← Torna ai prodotti
+    </a>
+
+    <div>
+      <h1>{{ isCreateMode ? 'Crea prodotto' : 'Modifica prodotto' }}</h1>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="state-card">
+    <div class="loader"></div>
+    <p>
+      {{ isCreateMode ? 'Preparazione form...' : 'Caricamento prodotto...' }}
+    </p>
+  </div>
+
+  <div *ngIf="!isLoading && errorMessage" class="message error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="message success">
+    {{ successMessage }}
+  </div>
+
+  <form
+    *ngIf="!isLoading && !errorMessage"
+    [formGroup]="form"
+    (ngSubmit)="saveProduct()"
+    class="edit-card">
+
+    <div class="form-grid">
+
+      <div class="field full">
+        <label>Titolo prodotto</label>
+        <input
+          type="text"
+          formControlName="title"
+          placeholder="Es. Vino rosso">
+
+        <small *ngIf="form.get('title')?.touched && form.get('title')?.invalid">
+          Il titolo deve avere almeno 3 caratteri.
+        </small>
+      </div>
+
+      <div class="field">
+        <label>Prezzo</label>
+        <input
+          type="number"
+          formControlName="price"
+          placeholder="Es. 19.99">
+
+        <small *ngIf="form.get('price')?.touched && form.get('price')?.invalid">
+          Il prezzo deve essere maggiore di 0.
+        </small>
+      </div>
+
+      <div class="field">
+        <label>Categoria</label>
+
+        <select formControlName="categoryId">
+          <option value="">Seleziona categoria</option>
+
+          <option
+            *ngFor="let category of categories"
+            [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+
+        <small *ngIf="form.get('categoryId')?.touched && form.get('categoryId')?.invalid">
+          Devi selezionare una categoria.
+        </small>
+      </div>
+
+      <div class="field full">
+        <label>URL immagine</label>
+        <input
+          type="text"
+          formControlName="image"
+          placeholder="https://...">
+
+        <small *ngIf="form.get('image')?.touched && form.get('image')?.invalid">
+          Inserisci un URL immagine.
+        </small>
+      </div>
+
+      <div class="field full">
+        <label>Descrizione</label>
+        <textarea
+          rows="5"
+          formControlName="description"
+          placeholder="Descrizione prodotto"></textarea>
+
+        <small *ngIf="form.get('description')?.touched && form.get('description')?.invalid">
+          La descrizione deve avere almeno 10 caratteri.
+        </small>
+      </div>
+
+    </div>
+
+    <button type="submit" [disabled]="isSaving">
+      {{
+        isSaving
+          ? 'Salvataggio...'
+          : isCreateMode
+            ? 'Crea prodotto'
+            : 'Salva modifiche'
+      }}
+    </button>
+
+  </form>
+
+</section>

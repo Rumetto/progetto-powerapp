@@ -1,33 +1,128 @@
 <div class="page-header">
-  <h1>Lista prodotti</h1>
-</div>
+  <div class="header-actions">
 
-<div *ngIf="isLoading" class="loader-container">
-  <div class="loader"></div>
-  <p>Caricamento prodotti in corso...</p>
-</div>
-
-<div *ngIf="!isLoading && errorMessage" class="error-container">
-  <p>{{ errorMessage }}</p>
-</div>
-
-<div *ngIf="!isLoading && !errorMessage && products.length === 0" class="empty-container">
-  <p>Nessun prodotto presente.</p>
-</div>
-
-<div *ngIf="!isLoading && !errorMessage && products.length > 0" class="products-list">
-  <div class="product-item" *ngFor="let product of products" [routerLink]="['/products', product.id]">
-    <div class="product-image-container">
-      <img [src]="product.image" [alt]="product.title" loading="lazy" />
+    <div class="search-container">
+      <input
+        type="text"
+        placeholder="Cerca prodotto..."
+        (input)="onSearch($event)"
+        class="search-input"
+      />
     </div>
 
-    <div class="product-main-info">
-      <h3 class="product-title">{{ product.title }}</h3>
-      <p class="product-category">{{ product.category }}</p>
+    <div class="categories-dropdown">
+      <button
+        type="button"
+        class="categories-button"
+        (click)="toggleCategoriesMenu()">
+        Categorie
+      </button>
+
+      <div
+        class="categories-menu"
+        *ngIf="isCategoriesMenuOpen()">
+
+        <button
+          type="button"
+          class="categories-menu-item"
+          (click)="filterByCategory(undefined)">
+          Tutte le categorie
+        </button>
+
+        <button
+          *ngFor="let category of categories"
+          type="button"
+          class="categories-menu-item"
+          (click)="filterByCategory(category.id)">
+          {{ category.name }}
+        </button>
+
+      </div>
     </div>
 
-    <div class="product-price-container">
-      <p class="product-price">{{ product.price | number:'1.2-2' }} €</p>
-    </div>
+    <a routerLink="./0" class="add-button">
+      Nuovo Prodotto
+    </a>
+
   </div>
+</div>
+
+<div *ngIf="!isLoading() && !errorMessage() && products.length > 0" class="products-table-container">
+
+  <table class="products-table">
+    <thead>
+      <tr>
+        <th>Immagine</th>
+        <th>Prodotto</th>
+        <th>Categoria</th>
+        <th>Prezzo</th>
+        <th>Azioni</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr
+        *ngFor="let product of pagedProducts"
+        [routerLink]="['/products', product.id]"
+        class="product-row"
+      >
+        <td>
+          <img
+            class="product-table-image"
+            [src]="product.image"
+            [alt]="product.title"
+          />
+        </td>
+
+        <td>
+          <strong>{{ product.title }}</strong>
+        </td>
+
+        <td>
+          {{ getCategoryName(product.categoryId) }}
+        </td>
+
+        <td>
+          {{ product.price }} €
+        </td>
+
+        <td>
+          <button
+            type="button"
+            class="delete-button"
+            (click)="deleteProduct(product.id, $event)"
+            title="Elimina prodotto"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="paginator-container">
+    <p-paginator
+      (onPageChange)="onPageChange($event)"
+      [first]="first"
+      [rows]="rows"
+      [totalRecords]="totalRecords"
+      [rowsPerPageOptions]="[ 2, 3, 4,5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 50]">
+    </p-paginator>
+  </div>
+
 </div>

@@ -1,0 +1,28 @@
+<a routerLink="/categories" class="back-link">
+  ← Torna alle categorie
+</a>
+
+<h1>Aggiungi categoria</h1>
+
+<form [formGroup]="form" (ngSubmit)="saveCategory()" class="category-form">
+
+  <label>Nome categoria</label>
+
+  <input
+    type="text"
+    formControlName="name"
+    placeholder="Es. vino">
+
+  <small *ngIf="form.get('name')?.touched && form.get('name')?.invalid">
+    Il nome deve avere almeno 2 caratteri.
+  </small>
+
+  <p *ngIf="errorMessage()" class="error">
+    {{ errorMessage() }}
+  </p>
+
+  <button type="submit" [disabled]="isSaving()">
+    {{ isSaving() ? 'Salvataggio...' : 'Salva categoria' }}
+  </button>
+
+</form>

@@ -3,23 +3,34 @@
     <h1>Dettaglio prodotto</h1>
   </div>
 
-  <div *ngIf="isLoading" class="loader-wrapper">
+  <div *ngIf="isLoading()" class="loader-wrapper">
     <div class="loader"></div>
     <p>Caricamento dettagli prodotto...</p>
   </div>
 
-  <div *ngIf="!isLoading && errorMessage" class="error-wrapper">
+  <div *ngIf="!isLoading() && errorMessage()" class="error-wrapper">
     <div class="error-icon">⚠️</div>
     <h2>Oops!</h2>
-    <p>{{ errorMessage }}</p>
-    <button class="btn btn-primary" (click)="tornaIndietro()">Torna alla lista</button>
+    <p>{{ errorMessage() }}</p>
+
+    <button class="btn btn-primary" (click)="tornaIndietro()">
+      Torna alla lista
+    </button>
   </div>
 
-  <div *ngIf="!isLoading && prodotto" class="product-detail-content">
+  <div *ngIf="!isLoading() && prodotto" class="product-detail-content">
     <div class="detail-navigation">
+
       <button class="back-link" (click)="tornaIndietro()">
-        <span class="icon">←</span> Torna ai prodotti
+        <span class="icon">←</span>
+        Torna ai prodotti
       </button>
+
+      <a class="edit-link" [routerLink]="['../edit-product', prodotto.id]">
+        <span class="icon">✎</span>
+        Modifica prodotto
+      </a>
+
     </div>
 
     <div class="product-hero">
@@ -30,11 +41,16 @@
       </div>
 
       <div class="info-section">
-        <p class="category-text">{{ prodotto.category }}</p>
-        <h1 class="product-title">{{ prodotto.title }}</h1>
-        
+        <p class="category-text">{{ categoryName() }}</p>
+
+        <h1 class="product-title">
+          {{ prodotto.title }}
+        </h1>
+
         <div class="price-row">
-          <span class="price-text">{{ prodotto.price | number:'1.2-2' }} €</span>
+          <span class="price-text">
+            {{ prodotto.price | number:'1.2-2' }} €
+          </span>
         </div>
 
         <div class="content-divider"></div>
@@ -42,10 +58,6 @@
         <div class="description-box">
           <h3>Descrizione</h3>
           <p>{{ prodotto.description }}</p>
-        </div>
-
-        <div class="footer-info">
-          <div class="product-id-tag">Codice prodotto: #{{ prodotto.id }}</div>
         </div>
       </div>
     </div>

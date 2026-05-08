@@ -1,90 +1,124 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
+  Firestore,
   collection,
-  addDoc,
-  getDocs,
   doc,
+  updateDoc,
+  deleteDoc,
+  getDocs,
   getDoc,
   query,
+  where,
+  QueryConstraint,
   orderBy,
-  serverTimestamp
-} from 'firebase/firestore';
-import { db } from '../firebase';
+  setDoc,
+  OrderByDirection,
+  limit,
+  startAfter,
+  QueryDocumentSnapshot,
+  DocumentData,
+  getCountFromServer
+} from '@angular/fire/firestore';
 
-export interface Product {
-  id?: string;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-  createdAt?: any;
-}
+import { Product } from './product';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private productsCollection = collection(db, 'products');
+  nameCollection: string = 'products';
 
-  async getProducts(): Promise<Product[]> {
-    console.log('ENTRO IN getProducts');
+  private firestore: Firestore = inject(Firestore);
 
-    // Recuperiamo tutti i documenti senza filtri/ordinamenti Firestore
-    // così non escludiamo quelli vecchi senza il campo createdAt
-    const snapshot = await getDocs(this.productsCollection);
+  async getProducts(
+    categoryId?: string,
+    orderField: string = 'title',
+    orderDirection: OrderByDirection = 'asc',
+    pageSize: number = 5,
+    lastDoc?: QueryDocumentSnapshot<DocumentData> | null
+  ): Promise<{
+    products: Product[],
+    lastDoc: QueryDocumentSnapshot<DocumentData> | null
+  }> {
+    const filters: QueryConstraint[] = [];
 
-    console.log('SNAPSHOT ARRIVATO');
-    console.log('NUMERO DOCUMENTI:', snapshot.docs.length);
+    if (categoryId) {
+      filters.push(where('categoryId', '==', categoryId));
+    }
 
-    const prodotti = snapshot.docs.map((docItem) => ({
-      id: docItem.id,
-      ...(docItem.data() as Omit<Product, 'id'>)
-    })) as Product[];
+    filters.push(orderBy(orderField, orderDirection));
 
-    // Ordiniamo in memoria: chi non ha data finisce all'inizio (vecchi)
-    // chi ha la data viene ordinato dal più vecchio al più nuovo (fondo lista)
-    prodotti.sort((a, b) => {
-      const timeA = a.createdAt?.seconds || 0;
-      const timeB = b.createdAt?.seconds || 0;
-      return timeA - timeB;
+    if (lastDoc) {
+      filters.push(startAfter(lastDoc));
+    }
+
+    filters.push(limit(pageSize));
+
+    const q = query(
+      collection(this.firestore, this.nameCollection),
+      ...filters
+    );
+
+    const snapshot = await getDocs(q);
+
+    const products = snapshot.docs.map(document => {
+      return new Product(document.data());
     });
 
-    console.log('PRODOTTI LETTI E ORDINATI:', prodotti);
+    const newLastDoc =
+      snapshot.docs.length > 0
+        ? snapshot.docs[snapshot.docs.length - 1]
+        : null;
 
-    return prodotti;
+    return {
+      products,
+      lastDoc: newLastDoc
+    };
   }
 
-  async addProduct(product: Omit<Product, 'id'>): Promise<void> {
-    console.log('ADD PRODUCT CHIAMATO CON:', product);
-    
-    const productWithTimestamp = {
-      ...product,
-      createdAt: serverTimestamp()
-    };
+  async getProductsCount(categoryId?: string): Promise<number> {
+    const filters: QueryConstraint[] = [];
 
-    await addDoc(this.productsCollection, productWithTimestamp);
-    console.log('PRODOTTO AGGIUNTO SU FIRESTORE');
+    if (categoryId) {
+      filters.push(where('categoryId', '==', categoryId));
+    }
+
+    const q = query(
+      collection(this.firestore, this.nameCollection),
+      ...filters
+    );
+
+    const snapshot = await getCountFromServer(q);
+
+    return snapshot.data().count;
   }
 
   async getProductById(id: string): Promise<Product | null> {
-    console.log('CERCO PRODOTTO CON ID:', id);
-
-    const productRef = doc(db, 'products', id);
+    const productRef = doc(this.firestore, `${this.nameCollection}/${id}`);
     const snapshot = await getDoc(productRef);
 
     if (!snapshot.exists()) {
-      console.log('PRODOTTO NON TROVATO');
       return null;
     }
 
-    const prodotto = {
-      id: snapshot.id,
-      ...(snapshot.data() as Omit<Product, 'id'>)
-    };
+    return new Product(snapshot.data());
+  }
 
-    console.log('PRODOTTO TROVATO:', prodotto);
+  async createProduct(product: Product): Promise<void> {
+    const id = doc(collection(this.firestore, this.nameCollection)).id;
+    product.id = id;
 
-    return prodotto;
+    const docRef = doc(this.firestore, `${this.nameCollection}/${id}`);
+    await setDoc(docRef, product.getData());
+  }
+
+  async updateProduct(product: Product): Promise<void> {
+    const productRef = doc(this.firestore, `${this.nameCollection}/${product.id}`);
+    await updateDoc(productRef, product.getData());
+  }
+
+  async deleteProduct(id: string): Promise<void> {
+    const productRef = doc(this.firestore, `${this.nameCollection}/${id}`);
+    await deleteDoc(productRef);
   }
 }

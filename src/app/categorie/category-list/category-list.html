@@ -1,0 +1,104 @@
+<div class="page-header">
+  <div>
+    <h1>Categorie</h1>
+    <p>Gestisci le categorie dei prodotti</p>
+  </div>
+
+  <div class="header-actions">
+
+    <div class="search-container">
+      <input
+        type="text"
+        placeholder="Cerca categoria..."
+        (input)="onSearch($event)"
+        class="search-input"
+      />
+    </div>
+
+    <a routerLink="/categories/0" class="add-button">
+      <svg xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Aggiungi categoria
+    </a>
+
+  </div>
+</div>
+
+<div *ngIf="isLoading()" class="loader-container">
+  <p>Caricamento categorie...</p>
+</div>
+
+<div *ngIf="!isLoading() && errorMessage()" class="error-container">
+  <p>{{ errorMessage() }}</p>
+</div>
+
+<div *ngIf="!isLoading() && !errorMessage() && categories().length === 0" class="empty-container">
+  <p>Nessuna categoria trovata.</p>
+</div>
+
+<div *ngIf="!isLoading() && !errorMessage() && categories().length > 0" class="category-list">
+
+  <div
+    class="category-item"
+    *ngFor="let category of categories()"
+    [routerLink]="['/categories', category.id]"
+  >
+
+    <div class="category-main-info">
+      <h3>{{ category.name }}</h3>
+    </div>
+
+    <div class="actions-container">
+      <button
+        type="button"
+        class="delete-button"
+        (click)="deleteCategory(category.id, $event)"
+        title="Elimina categoria">
+
+        <svg xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round">
+
+          <path d="M3 6h18"></path>
+          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+
+        </svg>
+
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+<div
+  *ngIf="!isLoading() && !errorMessage() && totalRecords > 0"
+  class="paginator-container">
+
+  <p-paginator
+  (onPageChange)="onPageChange($event)"
+  [first]="first"
+  [rows]="rows"
+  [totalRecords]="totalRecords"
+  [rowsPerPageOptions]="[2, 5, 10, 20]"
+  dropdownAppendTo="body">
+</p-paginator>
+
+</div>

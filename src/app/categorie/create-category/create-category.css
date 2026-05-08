@@ -1,0 +1,39 @@
+.back-link {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: #FD5A02;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.category-form {
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+input {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+button {
+  width: fit-content;
+  padding: 12px 20px;
+  background: #FD5A02;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+}
+
+small,
+.error {
+  color: red;
+}

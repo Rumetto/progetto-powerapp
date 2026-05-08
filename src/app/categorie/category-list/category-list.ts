@@ -2,13 +2,10 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
-import { Product } from '../product';
-import { ProductService } from '../product.service';
+import { Category } from '../category';
+import { CategoryService } from '../category.service';
 
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
-
-import { Category } from '../../categorie/category';
-import { CategoryService } from '../../categorie/category.service';
 
 import {
   OrderByDirection,
@@ -17,40 +14,31 @@ import {
 } from '@angular/fire/firestore';
 
 @Component({
-  selector: 'app-product-list',
+  selector: 'app-category-list',
   standalone: true,
   imports: [CommonModule, RouterLink, PaginatorModule],
-  templateUrl: './product-list.html',
-  styleUrl: './product-list.css'
+  templateUrl: './category-list.html',
+  styleUrl: './category-list.css'
 })
-export class ProductList implements OnInit {
+export class CategoryList implements OnInit {
 
-  products: Product[] = [];
-  pagedProducts: Product[] = [];
-  categories: Category[] = [];
+  categories = signal<Category[]>([]);
 
   isLoading = signal(true);
   errorMessage = signal('');
-  isCategoriesMenuOpen = signal(false);
 
   first: number = 0;
   rows: number = 5;
   totalRecords: number = 0;
 
-  categoryIdSelected?: string;
-
-  orderField: string = 'title';
+  orderField: string = 'name';
   orderDirection: OrderByDirection = 'asc';
 
   pageCursors: Array<QueryDocumentSnapshot<DocumentData> | null> = [null];
 
-  constructor(
-    private productService: ProductService,
-    private categoryService: CategoryService
-  ) {}
+  constructor(private categoryService: CategoryService) {}
 
   async ngOnInit(): Promise<void> {
-    this.categories = await this.categoryService.getCategories('name', 'asc');
     await this.resetAndLoad();
   }
 
@@ -58,9 +46,7 @@ export class ProductList implements OnInit {
     this.first = 0;
     this.pageCursors = [null];
 
-    this.totalRecords = await this.productService.getProductsCount(
-      this.categoryIdSelected
-    );
+    this.totalRecords = await this.categoryService.getCategoriesCount();
 
     await this.loadPage(0);
   }
@@ -77,22 +63,19 @@ export class ProductList implements OnInit {
         cursor = this.pageCursors[pageIndex] ?? null;
       }
 
-      const result = await this.productService.getProducts(
-        this.categoryIdSelected,
+      const result = await this.categoryService.getCategoriesPage(
         this.orderField,
         this.orderDirection,
         this.rows,
         cursor
       );
 
-      this.products = result.products;
-      this.pagedProducts = result.products;
-
+      this.categories.set(result.categories);
       this.pageCursors[pageIndex + 1] = result.lastDoc;
 
     } catch (error) {
-      console.error(error);
-      this.errorMessage.set('Errore caricamento prodotti');
+      console.error('Errore caricamento categorie:', error);
+      this.errorMessage.set('Errore durante il caricamento delle categorie.');
     } finally {
       this.isLoading.set(false);
     }
@@ -104,8 +87,7 @@ export class ProductList implements OnInit {
     let cursor: QueryDocumentSnapshot<DocumentData> | null = null;
 
     for (let i = 0; i < targetPage; i++) {
-      const result = await this.productService.getProducts(
-        this.categoryIdSelected,
+      const result = await this.categoryService.getCategoriesPage(
         this.orderField,
         this.orderDirection,
         this.rows,
@@ -126,48 +108,42 @@ export class ProductList implements OnInit {
     await this.loadPage(pageIndex);
   }
 
-  onSearch(event: Event): void {
+  async onSearch(event: Event): Promise<void> {
     const value = (event.target as HTMLInputElement).value.toLowerCase();
 
     if (!value) {
-      this.pagedProducts = this.products;
+      await this.resetAndLoad();
       return;
     }
 
-    this.pagedProducts = this.products.filter(product =>
-      product.title?.toLowerCase().includes(value)
+    const allCategories = await this.categoryService.getCategories(
+      this.orderField,
+      this.orderDirection
     );
+
+    const filtered = allCategories.filter(category =>
+      category.name?.toLowerCase().includes(value)
+    );
+
+    this.categories.set(filtered);
+    this.totalRecords = filtered.length;
+    this.first = 0;
   }
 
-  toggleCategoriesMenu(): void {
-    this.isCategoriesMenuOpen.update(v => !v);
-  }
-
-  async filterByCategory(categoryId: string | undefined): Promise<void> {
-    this.categoryIdSelected = categoryId;
-    this.isCategoriesMenuOpen.set(false);
-
-    await this.resetAndLoad();
-  }
-
-  async deleteProduct(id: string | undefined, event: Event): Promise<void> {
+  async deleteCategory(categoryId: string | undefined, event: Event): Promise<void> {
     event.stopPropagation();
 
-    if (!id) return;
+    if (!categoryId) return;
+
+    const confirmDelete = confirm('Sei sicuro di voler eliminare questa categoria?');
+    if (!confirmDelete) return;
 
     try {
-      await this.productService.deleteProduct(id);
+      await this.categoryService.deleteCategory(categoryId);
       await this.resetAndLoad();
     } catch (error) {
-      console.error(error);
-      this.errorMessage.set('Errore eliminazione');
+      console.error('Errore eliminazione categoria:', error);
+      this.errorMessage.set('Errore durante eliminazione della categoria.');
     }
-  }
-
-  getCategoryName(categoryId: string | undefined): string {
-    if (!categoryId) return '—';
-
-    const category = this.categories.find(c => c.id === categoryId);
-    return category?.name ?? '—';
   }
 }
